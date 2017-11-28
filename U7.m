@@ -9,7 +9,6 @@ stem(ax2, n, ns)
 
 
 sn = sc + ns
-%sn = 2*cos(2*pi*n/4)-sin(2*pi*n*3/8)
 t = 0:0.0001:0.015
 st = 2*cos(2*pi*250*t)-sin(2*pi*375*t)
 
@@ -32,5 +31,6 @@ ax6 = subplot(3,2,6);
 stem(ax6, n, imag(sik))
 
 
-%s4 = sum(sn.* cos(2*pi*n*k/16))
-%s6 = sum(sn.* (-j*sin(2*pi*n*k/16)))
+ener_zeit = sum(sn.^2)
+
+ener_freq = (sum(srk.^2) + sum(abs(sik).^2))/16
