@@ -4,10 +4,27 @@
 function [ ] = U11()
 close all
 [st, fs] = audioread('eins.wav');
-figure; stem(st)
-features = extract_features(st);
-features
-figure; stem(features)
+%if (fs == 16000)
+%    st = resample(st, 8, 16, 50);
+%end
+figure; plot(st)
+[features, dftmatrix, melmatrix] = extract_features(st, fs);
+
+figure;
+imagesc(20*log10(dftmatrix'));
+axis xy;
+colormap('jet');
+
+figure;
+imagesc(melmatrix');
+axis xy;
+colormap('jet');
+
+%features
+figure; 
+mesh(features);
+figure; 
+plot(features(:,2));
 end
 
 
@@ -32,22 +49,25 @@ end
 
 
 
-function [ features ] = extract_features( st )
+function [features, dftmatrix, melmatrix] = extract_features( st, fs )
 
-step = 80;
-width = 200;
+step = 0.01; % 10 ms
+step = round(step * fs);
+width = 0.025;
+width = round(width *fs);
 
 b = [1 -0.95];
 
 fmin = 200;
-fmax = 4000;
-fa = 8000;
+fmax = fs/2;
+%fa = 8000;
+fa = fs;
 M = 24;
 
 %figure; stem(abs(fft(st)));
 st_filtered = filter(b, 1, st);
 %figure; stem(abs(fft(st_filtered)));
-figure; stem(st_filtered)
+%figure; stem(st_filtered)
 hamm = hamming(width);
     
 I = floor(M/2);
@@ -73,19 +93,24 @@ for v = 0:step:length(st)-width
         r = myrow(2);
         mel_spectral(row) = sum(sf(l:r));
     end
-    if ind == 1
-        figure; stem(sf)
-        figure; stem(mel_spectral)
-    end
+    %if ind == 1
+    %    figure; stem(sf)
+    %    figure; stem(mel_spectral)
+    %end
     mel_spectral = log10(mel_spectral);
     mel_cepstral = mel_spectral * dctmat;
-    if ind == 1
-        figure; stem(mel_spectral)
-        figure; stem(mel_cepstral)
-    end
+    %if ind == 1
+    %    figure; stem(mel_spectral)
+    %    figure; stem(mel_cepstral)
+    %end
     %energy
     %mel_cepstral(2:I+1)
     features(ind,:) = [energy mel_cepstral(2:I+1)];
+    
+    % zur Überprüfung
+    dftmatrix(ind,:) = sf(1:width/2+1);
+    melmatrix(ind,:) = mel_spectral;
+    
     
     ind = ind + 1;
 end
