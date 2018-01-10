@@ -33,19 +33,34 @@ VX = cat(1, V1, V2, V3);
 
 M = mean(VX, 1);    %1.5194    2.6065
 
-[x1,x2] = meshgrid(0:0.1:4,0:0.1:4);
-x = [x1(:) x2(:)];
+M
 
+[x1,x2] = meshgrid(0:0.1:4);
 
-x = [0.74 3.45];
-r = p(x,M,Cov)
+for i = 1:size(x1,1)
+    for j = 1:size(x1,2)
+        x = [x1(i,j) x2(i,j)];
+        y(i,j) = 1/sqrt((2*pi)^2*det(Cov))*exp(-0.5*(x-M)*inv(Cov)*(x-M).');
+    end
+end
+
+y
+
+figure; mesh(x1, x2, y);
+
+Cov(2,1) = 0;
+Cov(1,2) = Cov(2,1);
+for i = 1:size(x1,1)
+    for j = 1:size(x1,2)
+        x = [x1(i,j) x2(i,j)];
+        y(i,j) = 1/sqrt((2*pi)^2*det(Cov))*exp(-0.5*(x-M)*inv(Cov)*(x-M).');
+    end
+end
+
+figure; mesh(x1, x2, y);
+
 
 end
 
-
-function[res] = p(x,m,cov)
-    M = size(x,2);
-    res = 1/sqrt((2*pi)^M*det(cov))*exp(-0.5*(x-m)*inv(cov)*(x-m).');
-end
 
 
